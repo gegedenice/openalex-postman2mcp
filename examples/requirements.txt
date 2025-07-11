@@ -1,0 +1,7 @@
+altair
+gradio
+openai-agents
+python-dotenv
+requests
+pandas
+smolagents[mcp,litellm,openai,toolkit]

@@ -1,0 +1,986 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "OpenAlex API",
+        "version": "1.0.0",
+        "description": "## OpenAlex API - MCP-ready Postman Collection\n\nThis Postman collection provides structured access to the OpenAlex API, a comprehensive, open index of scholarly entities such as:\n\n- Works (papers, articles)\n    \n- Authors\n    \n- Institutions\n    \n- Sources (journals, venues)\n    \n- Topics (concepts)\n    \n- Publishers\n    \n- Funders\n    \n\n### Primary Use Cases\n\nThis collection is designed to support natural language agents or LLM-based assistants using the Model Context Protocol (MCP), with use cases such as:\n\n- Searching for academic works filtered by topic, author, date, or institution\n    \n- Retrieving metadata for individual scholarly works or entities by ID\n    \n- Listing top institutions, authors, journals, or funders in a field\n    \n- Building research dashboards or intelligent assistants that query OpenAlex\n    \n\n### Getting Started\n\n1. Import the collection into Postman.\n    \n2. Use the included examples (under each request) to understand typical query structures and response schemas.\n    \n3. No authentication is required to access the OpenAlex API.\n    \n4. All requests are made via `GET` to the base URL: `https://api.openalex.org`\n    \n\n### For LLM Integrations\n\nThis collection is fully compatible with Postman's AI toolchain and can be used to generate an MCP server to enable structured API access from AI agents.\n\n- Each request includes saved examples for MCP schema generation\n    \n- Entity endpoints follow a consistent pattern: `GET /` and `GET //{id}`\n    \n- Responses reflect OpenAlex\u2019s live data format for reliable modeling\n    \n\nLearn more about OpenAlex: [https://docs.openalex.org/](https://docs.openalex.org/)\n\nLearn more about MCP: [https://www.postman.com/ai/](https://www.postman.com/ai/)"
+    },
+    "paths": {
+        "/works": {
+            "get": {
+                "summary": "List works",
+                "description": "Search and filter works with query parameters.\n\nThe results are sorted by relevance, with the best match first.\n\n---\n**Examples:**\n- List works: `{}`\n- List works from the 1st january 2025: `{'filter': 'from_publication_date:2025-01-01'}`\n- List works with authors from US institutions: `{'filter': 'authorships.institutions.country_code:US'}`\n- List works related to the Sustainable Development Goal with ID `1`: `{'filter': 'sustainable_development_goals.id:1'}`\n- List works cited more than 100 times: `{'filter': 'cited_by_count:>100'}`\n- List works related to the concept of `quantum computing`: `{'search': 'quantum%20computing'}`\n- List works authored by a specific author with ORCID `0000-0001-2345-6789`: `{'filter': 'authorships.author.orcid:0000-0001-2345-6789'}`\n- Amount of APC paid by institution with ID `I5124864` from 2020 to 2023: `{'filter': 'authorships.institutions.id:I5124864,publication_year:2020-2023', 'apc_sum': 'true'}`\n- List most cited works published by institution with ID `I5124864` about artificial intelligence: `{'search': 'artificial intelligence', 'filter': 'authorships.institutions.id:I5124864', 'sort': 'cited_by_count:desc'}`\n- List articles in Gold Open Access published by institution in Switzerland since 2020: `{'filter': 'authorships.institutions.country_code:CH,type:article,open_access.oa_status:gold,publication_year:2020-'}`\n- Get count of works by OA status: `{'group_by': 'oa_status'}`\n- List journal articles from the University of Florida since 2012-08-24: `{'filter': 'institutions.ror:https://ror.org/02y3ad647,type:article,from_publication_date:2012-08-24,is_paratext:false'}`\n- Get OA journal articles of University of Florida group by year: `{'page': '1', 'filter': 'authorships.institutions.lineage:I138006243,open_access.is_oa:true,primary_location.source.type:journal', 'group_by': 'publication_year'}`\n- Get count of works by SDG for University of Alberta since 2010: `{'page': '1', 'filter': 'publication_year:2010-,authorships.institutions.lineage:I168635309', 'group_by': 'sustainable_development_goals.id'}`\n- Get main authors on Kelp forest since 2013: `{'page': '1', 'filter': 'default.search:kelp+forest,primary_location.source.type:journal,publication_year:2013-', 'group_by': 'authorships.author.id'}`\n- Get main journals where authors of UCLA and UBC are publishing in collaboration: `{'page': '1', 'filter': 'authorships.institutions.lineage:I141945490+I161318765,type:article,primary_location.source.type:journal,authors_count:1-10', 'group_by': 'primary_location.source.id'}`\n",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Literal search text"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter query, e.g. topics.id:T41008148"
+                    },
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limi the fields that are returned, e.g. id, display_name"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Sort order, e.g. publication_year:desc"
+                    },
+                    {
+                        "name": "group_by",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Group by a specific field"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results per page"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results page number"
+                    },
+                    {
+                        "name": "apc_sum",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "Returns total APC values in the meta section"
+                    },
+                    {
+                        "name": "cited_by_count_sum",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "Returns the total citation counts in the meta section"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "List works",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "List works from the 1st january 2025",
+                                        "value": {
+                                            "filter": "from_publication_date:2025-01-01"
+                                        }
+                                    },
+                                    "example_3": {
+                                        "summary": "List works with authors from US institutions",
+                                        "value": {
+                                            "filter": "authorships.institutions.country_code:US"
+                                        }
+                                    },
+                                    "example_4": {
+                                        "summary": "List works related to the Sustainable Development Goal with ID `1`",
+                                        "value": {
+                                            "filter": "sustainable_development_goals.id:1"
+                                        }
+                                    },
+                                    "example_5": {
+                                        "summary": "List works cited more than 100 times",
+                                        "value": {
+                                            "filter": "cited_by_count:>100"
+                                        }
+                                    },
+                                    "example_6": {
+                                        "summary": "List works related to the concept of `quantum computing`",
+                                        "value": {
+                                            "search": "quantum%20computing"
+                                        }
+                                    },
+                                    "example_7": {
+                                        "summary": "List works authored by a specific author with ORCID `0000-0001-2345-6789`",
+                                        "value": {
+                                            "filter": "authorships.author.orcid:0000-0001-2345-6789"
+                                        }
+                                    },
+                                    "example_8": {
+                                        "summary": "Amount of APC paid by institution with ID `I5124864` from 2020 to 2023",
+                                        "value": {
+                                            "filter": "authorships.institutions.id:I5124864,publication_year:2020-2023",
+                                            "apc_sum": "true"
+                                        }
+                                    },
+                                    "example_9": {
+                                        "summary": "List most cited works published by institution with ID `I5124864` about artificial intelligence",
+                                        "value": {
+                                            "search": "artificial intelligence",
+                                            "filter": "authorships.institutions.id:I5124864",
+                                            "sort": "cited_by_count:desc"
+                                        }
+                                    },
+                                    "example_10": {
+                                        "summary": "List articles in Gold Open Access published by institution in Switzerland since 2020",
+                                        "value": {
+                                            "filter": "authorships.institutions.country_code:CH,type:article,open_access.oa_status:gold,publication_year:2020-"
+                                        }
+                                    },
+                                    "example_11": {
+                                        "summary": "Get count of works by OA status",
+                                        "value": {
+                                            "group_by": "oa_status"
+                                        }
+                                    },
+                                    "example_12": {
+                                        "summary": "List journal articles from the University of Florida since 2012-08-24",
+                                        "value": {
+                                            "filter": "institutions.ror:https://ror.org/02y3ad647,type:article,from_publication_date:2012-08-24,is_paratext:false"
+                                        }
+                                    },
+                                    "example_13": {
+                                        "summary": "Get OA journal articles of University of Florida group by year",
+                                        "value": {
+                                            "page": "1",
+                                            "filter": "authorships.institutions.lineage:I138006243,open_access.is_oa:true,primary_location.source.type:journal",
+                                            "group_by": "publication_year"
+                                        }
+                                    },
+                                    "example_14": {
+                                        "summary": "Get count of works by SDG for University of Alberta since 2010",
+                                        "value": {
+                                            "page": "1",
+                                            "filter": "publication_year:2010-,authorships.institutions.lineage:I168635309",
+                                            "group_by": "sustainable_development_goals.id"
+                                        }
+                                    },
+                                    "example_15": {
+                                        "summary": "Get main authors on Kelp forest since 2013",
+                                        "value": {
+                                            "page": "1",
+                                            "filter": "default.search:kelp+forest,primary_location.source.type:journal,publication_year:2013-",
+                                            "group_by": "authorships.author.id"
+                                        }
+                                    },
+                                    "example_16": {
+                                        "summary": "Get main journals where authors of UCLA and UBC are publishing in collaboration",
+                                        "value": {
+                                            "page": "1",
+                                            "filter": "authorships.institutions.lineage:I141945490+I161318765,type:article,primary_location.source.type:journal,authors_count:1-10",
+                                            "group_by": "primary_location.source.id"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/works/{{id}}": {
+            "get": {
+                "summary": "Get work by ID",
+                "description": "Retrieve a specific work by its OpenAlex ID.\n\n---\n**Examples:**\n- Get work by internal OpenAlex ID: `{}`\n- Get work by DOI ID: `{}`\n- Get work by Pubmed ID: `{}`\n- Display only the id and display_name for the work ID `W2741809807`: `{'select': 'id,display_name'}`\n",
+                "parameters": [
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id, display_name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "Get work by internal OpenAlex ID",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "Get work by DOI ID",
+                                        "value": {}
+                                    },
+                                    "example_3": {
+                                        "summary": "Get work by Pubmed ID",
+                                        "value": {}
+                                    },
+                                    "example_4": {
+                                        "summary": "Display only the id and display_name for the work ID `W2741809807`",
+                                        "value": {
+                                            "select": "id,display_name"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/authors": {
+            "get": {
+                "summary": "List authors",
+                "description": "Search and filter authors with query parameters.\n\nThe results are sorted by relevance, with the best match first.\n\n---\n**Examples:**\n- List authors sorted by cited by count, descending: `{'sort': 'cited_by_count:desc'}`\n- Second page of list authors, with 50 results returned per page: `{'per_page': '50', 'page': '2'}`\n- Get counts of authors by their institution type: `{'group_by': 'last_known_institution.continent'}`\n",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Literal search text"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter query, e.g. topics.id:T41008148"
+                    },
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id,display_name,orcid"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Sort order, e.g. publication_year:desc"
+                    },
+                    {
+                        "name": "group_by",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Group by a specific field"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results per page"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results page number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "List authors sorted by cited by count, descending",
+                                        "value": {
+                                            "sort": "cited_by_count:desc"
+                                        }
+                                    },
+                                    "example_2": {
+                                        "summary": "Second page of list authors, with 50 results returned per page",
+                                        "value": {
+                                            "per_page": "50",
+                                            "page": "2"
+                                        }
+                                    },
+                                    "example_3": {
+                                        "summary": "Get counts of authors by their institution type",
+                                        "value": {
+                                            "group_by": "last_known_institution.continent"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/authors/{{id}}": {
+            "get": {
+                "summary": "Get author by ID",
+                "description": "Retrieve an author by OpenAlex ID.\n\n---\n**Examples:**\n- Get author by OpenAlex ID: `{}`\n- Get author by Orcid ID: `{}`\n- Display only the id and display_name and orcid for the author ID `A5042962646`: `{'select': 'id,display_name,orcid'}`\n",
+                "parameters": [
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id, display_name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "Get author by OpenAlex ID",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "Get author by Orcid ID",
+                                        "value": {}
+                                    },
+                                    "example_3": {
+                                        "summary": "Display only the id and display_name and orcid for the author ID `A5042962646`",
+                                        "value": {
+                                            "select": "id,display_name,orcid"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/institutions": {
+            "get": {
+                "summary": "List institutions",
+                "description": "Search and filter institutions with query parameters.\n\nThe results are sorted by relevance, with the best match first.\n\n---\n**Examples:**\n- List institutions: `{}`\n- List institutions sorted by works count, descending: `{'sort': 'works_count:desc'}`\n- Search institutions for San Diego State University: `{'search': 'san%20diego%20state%20university'}`\n- List institutions with names containing `technology`: `{'filter': 'display_name.search:technology'}`\n- List institutions having lack of ROR ID: `{'filter': 'has_ror:false'}`\n- List institutions located in South America: `{'filter': 'continent:south_america'}`\n- Get counts of institutions by country code: `{'group_by': 'country_code'}`\n",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Literal search text"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter query, e.g. topics.id:T41008148"
+                    },
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id, display_name"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Sort order, e.g. publication_year:desc"
+                    },
+                    {
+                        "name": "group_by",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Group by a specific field"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results per page"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results page number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "List institutions",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "List institutions sorted by works count, descending",
+                                        "value": {
+                                            "sort": "works_count:desc"
+                                        }
+                                    },
+                                    "example_3": {
+                                        "summary": "Search institutions for San Diego State University",
+                                        "value": {
+                                            "search": "san%20diego%20state%20university"
+                                        }
+                                    },
+                                    "example_4": {
+                                        "summary": "List institutions with names containing `technology`",
+                                        "value": {
+                                            "filter": "display_name.search:technology"
+                                        }
+                                    },
+                                    "example_5": {
+                                        "summary": "List institutions having lack of ROR ID",
+                                        "value": {
+                                            "filter": "has_ror:false"
+                                        }
+                                    },
+                                    "example_6": {
+                                        "summary": "List institutions located in South America",
+                                        "value": {
+                                            "filter": "continent:south_america"
+                                        }
+                                    },
+                                    "example_7": {
+                                        "summary": "Get counts of institutions by country code",
+                                        "value": {
+                                            "group_by": "country_code"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/institutions/{{id}}": {
+            "get": {
+                "summary": "Get institution by ID",
+                "description": "Retrieve an institution by ID.\n\n---\n**Examples:**\n- Get institution by OpenAlex ID: `{}`\n- Get institution by ROR ID: `{}`\n- Display only the id and display_name of the institution ID `I27837315`: `{'select': 'id,display_name'}`\n",
+                "parameters": [
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id, display_name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "Get institution by OpenAlex ID",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "Get institution by ROR ID",
+                                        "value": {}
+                                    },
+                                    "example_3": {
+                                        "summary": "Display only the id and display_name of the institution ID `I27837315`",
+                                        "value": {
+                                            "select": "id,display_name"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/topics": {
+            "get": {
+                "summary": "List topics",
+                "description": "Search and filter topics with query parameters.\n\nThe results are sorted by relevance, with the best match first.\n\n---\n**Examples:**\n- List topics: `{}`\n- Sort topics by cited by count, descending: `{'sort': 'cited_by_count:desc'}`\n- Get the second page of topics results, with 50 results returned per page: `{'per_page': '50', 'page': '2'}`\n- Display only id and display_name of institutions results: `{'select': 'id,display_name,description'}`\n- Get counts of topics by domain: `{'group_by': 'domain.id'}`\n",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Literal search text"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter query, e.g. topics.id:T41008148"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Sort order, e.g. publication_year:desc"
+                    },
+                    {
+                        "name": "group_by",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Group by a specific field"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results per page"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results page number"
+                    },
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the field that are returned, e.g. id, display_name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "List topics",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "Sort topics by cited by count, descending",
+                                        "value": {
+                                            "sort": "cited_by_count:desc"
+                                        }
+                                    },
+                                    "example_3": {
+                                        "summary": "Get the second page of topics results, with 50 results returned per page",
+                                        "value": {
+                                            "per_page": "50",
+                                            "page": "2"
+                                        }
+                                    },
+                                    "example_4": {
+                                        "summary": "Display only id and display_name of institutions results",
+                                        "value": {
+                                            "select": "id,display_name,description"
+                                        }
+                                    },
+                                    "example_5": {
+                                        "summary": "Get counts of topics by domain",
+                                        "value": {
+                                            "group_by": "domain.id"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/topics/{{id}}": {
+            "get": {
+                "summary": "Get topic by ID",
+                "description": "Retrieve a topic by ID.\n\n---\n**Examples:**\n- Get topic by OpenAlex ID: `{}`\n",
+                "parameters": [
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id, display_name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "Get topic by OpenAlex ID",
+                                        "value": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/publishers": {
+            "get": {
+                "summary": "List publishers",
+                "description": "Search and filter publishers with query parameters.\n\nThe results are sorted by relevance, with the best match first.\n\n---\n**Examples:**\n- Sort publishers by display name, descending: `{'sort': 'display_name:desc'}`\n- Display only the id, display_name, and alternate_titles within publishers results: `{'select': 'id,display_name,alternate_titles'}`\n- Get counts of publishers by country_codes: `{'group_by': 'country_codes'}`\n- Search publishers' display_name and alternate_titles for `springer`: `{'search': 'springer'}`\n- Get the second page of publishers results, with 50 results returned per page: `{'per_page': '50', 'page': '2'}`\n",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Literal search text"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter query, e.g. topics.id:T41008148"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Sort order, e.g. publication_year:desc"
+                    },
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the field that are returned, e.g. id, display_name"
+                    },
+                    {
+                        "name": "group_by",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Group by a specific field"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results per page"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results page number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "Sort publishers by display name, descending",
+                                        "value": {
+                                            "sort": "display_name:desc"
+                                        }
+                                    },
+                                    "example_2": {
+                                        "summary": "Display only the id, display_name, and alternate_titles within publishers results",
+                                        "value": {
+                                            "select": "id,display_name,alternate_titles"
+                                        }
+                                    },
+                                    "example_3": {
+                                        "summary": "Get counts of publishers by country_codes",
+                                        "value": {
+                                            "group_by": "country_codes"
+                                        }
+                                    },
+                                    "example_4": {
+                                        "summary": "Search publishers' display_name and alternate_titles for `springer`",
+                                        "value": {
+                                            "search": "springer"
+                                        }
+                                    },
+                                    "example_5": {
+                                        "summary": "Get the second page of publishers results, with 50 results returned per page",
+                                        "value": {
+                                            "per_page": "50",
+                                            "page": "2"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/publishers/{{id}}": {
+            "get": {
+                "summary": "Get publisher by ID",
+                "description": "Retrieve a publisher by ID.\n\n---\n**Examples:**\n- Get publisher by OpenAlex ID: `{}`\n- Get publisher by Wikidata ID: `{}`\n- Display only the id and display_name for the publisher ID `P4310319965`: `{'select': 'id,display_name'}`\n",
+                "parameters": [
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id, display_name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "Get publisher by OpenAlex ID",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "Get publisher by Wikidata ID",
+                                        "value": {}
+                                    },
+                                    "example_3": {
+                                        "summary": "Display only the id and display_name for the publisher ID `P4310319965`",
+                                        "value": {
+                                            "select": "id,display_name"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/funders": {
+            "get": {
+                "summary": "List funders",
+                "description": "Search and filter funders with query parameters.\n\nThe results are sorted by relevance, with the best match first.\n\n---\n**Examples:**\n- List funders: `{}`\n- Get the second page of funders results, with 50 results returned per page: `{'per_page': '50', 'page': '2'}`\n- Sort funders by display name, descending: `{'sort': 'display_name:desc'}`\n- Display only the id, display_name, and alternate_titles within funders results: `{'select': 'id,display_name,alternate_titles'}`\n- Get counts of funders by country_code: `{'group_by': 'country_code'}`\n- Search funders' display_name, alternate_titles, and description for `health`: `{'search': 'health'}`\n- Get funders located in Canada: `{'filter': 'country_code:ca'}`\n",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Literal search text"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter query, e.g. topics.id:T41008148"
+                    },
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id, display_name"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Sort order, e.g. publication_year:desc"
+                    },
+                    {
+                        "name": "group_by",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Group by a specific field"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results per page"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Results page number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "List funders",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "Get the second page of funders results, with 50 results returned per page",
+                                        "value": {
+                                            "per_page": "50",
+                                            "page": "2"
+                                        }
+                                    },
+                                    "example_3": {
+                                        "summary": "Sort funders by display name, descending",
+                                        "value": {
+                                            "sort": "display_name:desc"
+                                        }
+                                    },
+                                    "example_4": {
+                                        "summary": "Display only the id, display_name, and alternate_titles within funders results",
+                                        "value": {
+                                            "select": "id,display_name,alternate_titles"
+                                        }
+                                    },
+                                    "example_5": {
+                                        "summary": "Get counts of funders by country_code",
+                                        "value": {
+                                            "group_by": "country_code"
+                                        }
+                                    },
+                                    "example_6": {
+                                        "summary": "Search funders' display_name, alternate_titles, and description for `health`",
+                                        "value": {
+                                            "search": "health"
+                                        }
+                                    },
+                                    "example_7": {
+                                        "summary": "Get funders located in Canada",
+                                        "value": {
+                                            "filter": "country_code:ca"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/funders/{{id}}": {
+            "get": {
+                "summary": "Get funder by ID",
+                "description": "Retrieve a funder by ID.\n\n---\n**Examples:**\n- Get funder by OpenAlex ID `F4320332161`: `{}`\n- Get funder by Wikidata ID: `{}`\n- Display only the id and display_name for funder ID `F4320332161`: `{'select': 'id,display_name'}`\n",
+                "parameters": [
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Limit the fields that are returned, e.g. id, display_name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "example_1": {
+                                        "summary": "Get funder by OpenAlex ID `F4320332161`",
+                                        "value": {}
+                                    },
+                                    "example_2": {
+                                        "summary": "Get funder by Wikidata ID",
+                                        "value": {}
+                                    },
+                                    "example_3": {
+                                        "summary": "Display only the id and display_name for funder ID `F4320332161`",
+                                        "value": {
+                                            "select": "id,display_name"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ]
+}
