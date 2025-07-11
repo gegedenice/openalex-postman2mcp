@@ -68,6 +68,7 @@ pip install -r requirements.txt
 ## Examples
 
 > Recommanded: create a a separate virtual environment for the example folder.
+
 > Fill the .env file with your OpenAI API key
 
 This folder provides three example scripts to demonstrate different ways to interact with the OpenAlex API using agents and MCP tools:
