@@ -8,7 +8,7 @@ import httpx
 import os
 import uvicorn
 
-app = FastAPI(title="OpenAlex MCP Server", openapi_url=None )
+app = FastAPI(title="FastAPi server", openapi_url=None )
 
 # CORS for LLM or local dev tools
 app.add_middleware(
@@ -42,7 +42,7 @@ async def root():
 # ================================
 @app.get("/{full_path:path}")
 async def generic_proxy_get(full_path: str, request: Request):
-    target_url = f"http://localhost:8000/{full_path}"
+    target_url = f"https://api.openalex.org/{full_path}"
     query_params = dict(request.query_params)
 
     try:
