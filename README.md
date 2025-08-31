@@ -2,6 +2,38 @@
 
 A working application application of the [postman2mcp](https://github.com/gegedenice/postman2mcp) module
 
+## Running with Docker
+
+This repository is dockerized for easy setup and deployment. The two services (FastAPI and FastMCP) are managed using `docker-compose`.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Usage
+
+1. **Build and start the services:**
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   This command will build the Docker image for the services and start them. The `-d` flag can be used to run the services in detached mode.
+
+2. **Access the services:**
+
+   - **FastAPI server:** `http://localhost:8000`
+   - **FastMCP server:** `http://localhost:3333/mcp`
+
+3. **Stopping the services:**
+
+   To stop the services, press `Ctrl+C` in the terminal where `docker-compose` is running, or run the following command from the project root:
+
+   ```bash
+   docker-compose down
+   ```
+
 ---
 
 ## How was the project generated
