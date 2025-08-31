@@ -1,0 +1,16 @@
+services:
+  fastapi:
+    build:
+      context: ./gen-openalex-postman2mcp
+    ports:
+      - "8000:8000"
+    command: uvicorn fastapi_proxy.main:app --host 0.0.0.0 --port 8000
+
+  fastmcp:
+    build:
+      context: ./gen-openalex-postman2mcp
+    ports:
+      - "3333:3333"
+    depends_on:
+      - fastapi
+    command: ["./wait-for-it.sh", "fastapi:8000", "--", "python", "server.py"]
